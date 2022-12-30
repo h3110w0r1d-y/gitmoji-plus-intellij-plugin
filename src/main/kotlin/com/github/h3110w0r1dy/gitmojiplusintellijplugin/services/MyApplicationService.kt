@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.template.services
+package com.github.h3110w0r1dy.gitmojiplusintellijplugin.services
 
-import org.jetbrains.plugins.template.MyBundle
+import com.github.h3110w0r1dy.gitmojiplusintellijplugin.MyBundle
 
 class MyApplicationService {
 
