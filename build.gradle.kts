@@ -27,7 +27,7 @@ repositories {
 }
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("javassist:javassist:3.11.0.GA")
+    implementation("javassist:javassist:3.12.1.GA")
 }
 
 // Set the JVM language level used to build project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
@@ -74,18 +74,7 @@ tasks {
         sinceBuild.set(properties("pluginSinceBuild"))
         untilBuild.set(properties("pluginUntilBuild"))
 
-        // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
-        pluginDescription.set(
-            file("README.md").readText().lines().run {
-                val start = "<!-- Plugin description -->"
-                val end = "<!-- Plugin description end -->"
-
-                if (!containsAll(listOf(start, end))) {
-                    throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
-                }
-                subList(indexOf(start) + 1, indexOf(end))
-            }.joinToString("\n").let { markdownToHTML(it) }
-        )
+        pluginDescription.set("Gitmoji")
 
         // Get the latest available change notes from the changelog file
 //        changeNotes.set(provider {
