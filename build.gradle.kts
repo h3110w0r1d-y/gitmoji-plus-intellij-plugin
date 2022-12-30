@@ -1,4 +1,4 @@
-import org.jetbrains.changelog.Changelog
+//import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 
 fun properties(key: String) = project.findProperty(key).toString()
@@ -24,6 +24,10 @@ version = properties("pluginVersion")
 // Configure project's dependencies
 repositories {
     mavenCentral()
+}
+dependencies {
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("javassist:javassist:3.11.0.GA")
 }
 
 // Set the JVM language level used to build project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
@@ -84,14 +88,14 @@ tasks {
         )
 
         // Get the latest available change notes from the changelog file
-        changeNotes.set(provider {
-            with(changelog) {
-                renderItem(
-                    getOrNull(properties("pluginVersion")) ?: getLatest(),
-                    Changelog.OutputType.HTML,
-                )
-            }
-        })
+//        changeNotes.set(provider {
+//            with(changelog) {
+//                renderItem(
+//                    getOrNull(properties("pluginVersion")) ?: getLatest(),
+//                    Changelog.OutputType.HTML,
+//                )
+//            }
+//        })
     }
 
     // Configure UI tests plugin

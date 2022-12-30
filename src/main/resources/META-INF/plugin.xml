@@ -1,18 +1,23 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.h3110w0r1dy.gitmojiplusintellijplugin</id>
-    <name>IntelliJ Platform Plugin gitmoji-plus-intellij-plugin</name>
+    <id>com.h3110w0r1d.gitmoji</id>
+    <name>Gitmoji Plus</name>
     <vendor>h3110w0r1d-y</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <actions>
+        <action id="Gitmoji.GitCommitAction" text="Gitmoji" class="com.h3110w0r1d.gitmoji.GitCommitAction"
+                icon="/icons/pluginIcon.png" description="Add gitmoji button">
+            <add-to-group group-id="Vcs.MessageActionGroup" anchor="first" />
+        </action>
+    </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.h3110w0r1dy.gitmojiplusintellijplugin.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.h3110w0r1dy.gitmojiplusintellijplugin.services.MyProjectService"/>
+        <projectConfigurable instance="com.h3110w0r1d.gitmoji.GitmojiConfig" groupId="other"
+                             id="com.h3110w0r1d.gitmoji.config"/>
     </extensions>
-
     <applicationListeners>
-        <listener class="com.github.h3110w0r1dy.gitmojiplusintellijplugin.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+        <listener class="com.h3110w0r1d.gitmoji.EmojiCommitLogAppLifecycleListener"
+                  topic="com.intellij.ide.AppLifecycleListener" />
     </applicationListeners>
 </idea-plugin>
