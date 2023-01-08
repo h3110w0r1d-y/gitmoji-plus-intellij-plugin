@@ -75,13 +75,16 @@ tasks {
         untilBuild.set(properties("pluginUntilBuild"))
 
         pluginDescription.set("""
-This plug-in is integrated by the following two plug-ins:
-[Gitmoji Plug: Commit Button](https://github.com/patou/gitmoji-intellij-plugin)
-[Emoji Commit Log Viewer](https://github.com/siosio/EmojiCommitLogViewer)
-Add a gitmoji emoticon in your commits to make them sexier! This plug-in will help you to choose and add the gitmoji, via a button in the Commit window, among a predefined list of emoticons coming from reference commit rules.
-Commit log window to show the emoji. example: :recycle: -> ♻
-汉化了Commit提示信息，优化了EmojiCommitLogViewer的Patch方案
-        """.trimIndent())
+<html>
+<h2>Gitmoji Plus</h2>
+<h3>This plug-in is integrated by the following two plug-ins:</h3>
+<li><a href="https://github.com/siosio/EmojiCommitLogViewer">Emoji Commit Log Viewer</a></li>
+<li><a href="https://github.com/patou/gitmoji-intellij-plugin">Gitmoji Plus: Commit Button</a></li>
+<h3>Features:</h3>
+<li>Add a gitmoji emoticon in your commits to make them sexier! This plug-in will help you to choose and add the gitmoji, via a button in the Commit window, among a predefined list of emoticons coming from reference commit rules.</li>
+<li>Commit log window to show the emoji. example: :recycle: -> ♻</li>
+<li>汉化了Commit提示信息，优化了EmojiCommitLogViewer的Patch方案</li>
+</html>""".trimIndent())
 
 //        changeNotes.set(provider {
 //            with(changelog) {
