@@ -228,7 +228,7 @@ class GitCommitAction : AnAction() {
     private fun loadGitmojiFromHTTP() {
         val client = OkHttpClient().newBuilder().addInterceptor(SafeGuardInterceptor()).build()
         val request: Request = Builder()
-            .url("https://raw.githubusercontent.com/h3110w0r1d-y/gitmoji-plus-intellij-plugin/master/src/main/resources/gitmojis.json")
+            .url("https://gitmoji.dev/api/gitmojis")
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
