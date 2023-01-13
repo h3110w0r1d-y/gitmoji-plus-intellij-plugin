@@ -17,7 +17,7 @@
                              id="com.h3110w0r1d.gitmoji.config"/>
     </extensions>
     <applicationListeners>
-        <listener class="com.h3110w0r1d.gitmoji.EmojiCommitLogAppLifecycleListener"
+        <listener class="com.h3110w0r1d.gitmoji.EmojiCommitLogALL"
                   topic="com.intellij.ide.AppLifecycleListener" />
     </applicationListeners>
 </idea-plugin>

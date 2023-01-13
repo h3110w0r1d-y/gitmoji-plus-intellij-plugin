@@ -1,19 +1,25 @@
 package com.h3110w0r1d.gitmoji
 
 import com.intellij.ide.AppLifecycleListener
+import com.intellij.ide.util.PropertiesComponent
 import javassist.ClassClassPath
 import javassist.ClassPool
 import javassist.CtNewMethod
 
-class EmojiCommitLogAppLifecycleListener : AppLifecycleListener {
+class EmojiCommitLogALL : AppLifecycleListener {
     override fun appFrameCreated(commandLineArgs: MutableList<String>) {
+        val projectInstance = PropertiesComponent.getInstance()
+        if (!projectInstance.getBoolean(CONFIG_RENDER_COMMIT_LOG, true)){
+            return
+        }
+
         val classPool = ClassPool.getDefault()
         classPool.appendClassPath(ClassClassPath(EmojiConverter::class.java))
         val ctClass = classPool["com.intellij.vcs.log.ui.render.GraphCommitCell"]
         if (ctClass != null) {
             ctClass.defrost()
             val converter = classPool["com.h3110w0r1d.gitmoji.EmojiConverter"].getDeclaredMethod("convert")
-            ctClass.addMethod(CtNewMethod.copy(converter, ctClass, null));
+            ctClass.addMethod(CtNewMethod.copy(converter, ctClass, null))
             val constructor = ctClass.getConstructor("(Ljava/lang/String;Ljava/util/Collection;Ljava/util/Collection;)V")
             if (constructor != null) {
                 constructor.insertBefore("\$1 = convert(\$1);")

@@ -39,10 +39,13 @@ import javax.swing.ListSelectionModel
 
 class GitCommitAction : AnAction() {
     private val gitmojis = ArrayList<GitmojiData>()
+    private val pci = PropertiesComponent.getInstance()
+    private var language = "en"
 
     init {
         isEnabledInModalContext = true
-        loadDefaultGitmoji()
+        language = pci.getValue(CONFIG_LANGUAGE, "en")
+        loadRemoteGitmoji()
     }
 
     private val regexPattern = ":[a-z0-9_]+:"
@@ -54,9 +57,12 @@ class GitCommitAction : AnAction() {
     override fun actionPerformed(actionEvent: AnActionEvent) {
         val project = actionEvent.project
         val commitMessage = getCommitMessage(actionEvent)
-
         when {
             commitMessage != null && project != null -> {
+                if (language != pci.getValue(CONFIG_LANGUAGE, "en")) {
+                    language = pci.getValue(CONFIG_LANGUAGE, "en")
+                    loadRemoteGitmoji()
+                }
                 createPopup(project, commitMessage, gitmojis)
                     .showInBestPositionFor(actionEvent.dataContext)
             }
@@ -72,9 +78,7 @@ class GitCommitAction : AnAction() {
         var selectedMessage: GitmojiData? = null
         val rightMargin = getSubjectRightMargin(project)
         val previewCommandGroup = sentinel("Preview Commit Message")
-        val projectInstance = PropertiesComponent.getInstance(project)
-        val displayEmoji =
-            projectInstance.getValue(CONFIG_DISPLAY_ICON, Gitmojis.defaultDisplayType()) == "emoji"
+        val displayEmoji = pci.getBoolean(CONFIG_DISPLAY_EMOJI, Gitmojis.defaultDisplayEmoji())
         val currentCommitMessage = commitMessage.editorField.text
         val currentOffset = commitMessage.editorField.caretModel.offset
 
@@ -161,17 +165,17 @@ class GitCommitAction : AnAction() {
         groupId: Any
     ) =
         CommandProcessor.getInstance().executeCommand(project, {
-            val projectInstance = PropertiesComponent.getInstance(project)
+            val projectInstance = PropertiesComponent.getInstance()
             val useUnicode = projectInstance.getBoolean(CONFIG_USE_UNICODE, false)
-            val insertInCarretPosition = projectInstance.getBoolean(CONFIG_INSERT_IN_CURSOR_POSITION, false)
-            val includeGitMojiDescription = projectInstance.getBoolean(CONFIG_INCLUDE_GITMOJI_DESCRIPTION, false)
+            val insertInCursorPosition = projectInstance.getBoolean(CONFIG_INSERT_IN_CURSOR_POSITION, false)
+            val includeGitmojiDescription = projectInstance.getBoolean(CONFIG_INCLUDE_GITMOJI_DESCRIPTION, false)
 
             var message = currentCommitMessage // commitMessage.editorField.text
-            val insertPosition = if (insertInCarretPosition) currentOffset else 0
-            val textAfterUnicode = projectInstance.getValue(CONFIG_AFTER_UNICODE, " ")
+            val insertPosition = if (insertInCursorPosition) currentOffset else 0
+            val textAfterUnicode = projectInstance.getValue(CONFIG_AFTER_EMOJI, " ")
             val selectedGitmoji = if (useUnicode) "${gitmoji.emoji}$textAfterUnicode" else "${gitmoji.code}$textAfterUnicode"
             var replaced = false
-            if (!insertInCarretPosition) {
+            if (!insertInCursorPosition) {
                 if (useUnicode) {
                     for (moji in gitmojis) {
                         if (message.contains("${moji.emoji}$textAfterUnicode")) {
@@ -195,12 +199,12 @@ class GitCommitAction : AnAction() {
                 message = insertAt(message, insertPosition, selectedGitmoji)
             }
             val startPosition = insertPosition + selectedGitmoji.length
-            if (includeGitMojiDescription) {
+            if (includeGitmojiDescription) {
                 message = message.substring(0, startPosition) + gitmoji.description
             }
             commitMessage.setCommitMessage(message)
 
-            if (!insertInCarretPosition) {
+            if (!insertInCursorPosition) {
                 commitMessage.editorField.selectAll()
                 commitMessage.editorField.caretModel.removeSecondaryCarets()
                 commitMessage.editorField.caretModel.primaryCaret.setSelection(
@@ -225,19 +229,25 @@ class GitCommitAction : AnAction() {
     private fun getCommitMessage(e: AnActionEvent) =
         e.getData(VcsDataKeys.COMMIT_MESSAGE_CONTROL) as? CommitMessage
 
-    private fun loadGitmojiFromHTTP() {
+    private fun loadRemoteGitmoji() {
+        val projectInstance = PropertiesComponent.getInstance()
+        val language = projectInstance.getValue(CONFIG_LANGUAGE, "en")
+        val url = when(language){
+            "en" -> "https://gitmoji.dev/api/gitmojis"
+            else -> "https://raw.githubusercontent.com/h3110w0r1d-y/gitmoji-plus-intellij-plugin/master/src/main/resources/gitmojis/$language.json"
+        }
         val client = OkHttpClient().newBuilder().addInterceptor(SafeGuardInterceptor()).build()
         val request: Request = Builder()
-            .url("https://raw.githubusercontent.com/h3110w0r1d-y/gitmoji-plus-intellij-plugin/master/src/main/resources/gitmojis.json")
+            .url(url)
             .build()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                loadDefaultGitmoji()
+                loadLocalGitmoji(language)
             }
 
             override fun onResponse(call: Call, response: Response) {
                 response.use {
-                    if (!response.isSuccessful) loadDefaultGitmoji()
+                    if (!response.isSuccessful) loadLocalGitmoji(language)
                     else {
                         loadGitmoji(response.body!!.string())
                     }
@@ -246,8 +256,8 @@ class GitCommitAction : AnAction() {
         })
     }
 
-    private fun loadDefaultGitmoji() {
-        javaClass.getResourceAsStream("/gitmojis.json").use { inputStream ->
+    private fun loadLocalGitmoji(language: String) {
+        javaClass.getResourceAsStream("/gitmojis/$language.json").use { inputStream ->
             if (inputStream != null) {
                 val text = inputStream.bufferedReader().readText()
                 loadGitmoji(text)
@@ -256,6 +266,7 @@ class GitCommitAction : AnAction() {
     }
 
     private fun loadGitmoji(text: String) {
+        gitmojis.clear()
         Gson().fromJson(text, Gitmojis::class.java).also {
             it.gitmojis.forEach { gitmoji ->
                 gitmojis.add(GitmojiData(gitmoji.code, gitmoji.emoji, gitmoji.description))
