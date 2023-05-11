@@ -37,7 +37,7 @@ object EmojiConverter {
             ":wrench:" to "🔧",
             ":hammer:" to "🔨",
             ":globe_with_meridians:" to "🌐",
-            ":pencil2:" to "✏️",
+            ":pencil2:" to "✏️ ",
             ":poop:" to "💩",
             ":rewind:" to "⏪️",
             ":twisted_rightwards_arrows:" to "🔀",
