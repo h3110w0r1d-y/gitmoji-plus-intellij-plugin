@@ -1,13 +1,12 @@
 # Changelog
 
-<a name="0.1.0"></a>
-## 0.1.0 (2023-01-13)
+<a name="0.1.2"></a>
+## 0.1.2 (2023-07-29)
 
 ### Added
 
-| CommitMessage | Author | Commit |
-|---------------|--------|--------|
-| ✨ 添加多语言支持, 添加是否渲染CommitLog选项 | h3110w0r1d | [78a65b1](https://github.com/h3110w0r1d-y/gitmoji-plus-intellij-plugin/commit/78a65b171966d0e07c2489336f5d7369b434c514) |
+- ✨ 更新版本 [[8c91f0a](https://github.com/h3110w0r1d-y/gitmoji-plus-intellij-plugin/commit/8c91f0a76fb77ac8c2e69ac706ae68e6cb7a338c)]
+- ✨ 添加多语言支持, 添加是否渲染CommitLog选项 [[78a65b1](https://github.com/h3110w0r1d-y/gitmoji-plus-intellij-plugin/commit/78a65b171966d0e07c2489336f5d7369b434c514)]
 
 
 <a name="0.0.2"></a>
